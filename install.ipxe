@@ -1,0 +1,27 @@
+#!ipxe
+
+# This script boots WinPE via iPXE, and mounts an iSCSI target
+# You can use this to install Windows to an iSCSI target
+# You'll want to have a Windows installer either on a USB in the system, or launch it from a network share
+# You'll likely need to bake drivers for your network card into WinPE (and probably the Windows installer)
+# This is setup for LEGACY/BIOS boot, but wimboot will translate it to EFI boot if you boot iPXE in EFI mode, so it works for either.
+
+# The web server hosting your WinPE files, can also use a tftp server with tftp://
+set boot-url http://1.2.3.4:8080
+
+# The IQN/name to set for this device, can be important if your iSCSI server uses this for auth
+set initiator-iqn iqn.2000-01.com.example:my-pc-name
+
+echo Running install.ipxe
+set netX/gateway 0.0.0.0
+sleep 3
+
+# Attach the specificed iSCSI target (like connecting a external hardrive, but over iSCSI/network)
+sanhook -d 0x80 iscsi:1.2.3.4::::iqn.2000-01.com.iscsiserver:my-target || shell
+
+# Boot WinPE via wimboot to install Windows
+kernel ${boot-url}/wimboot gui
+initrd ${boot-url}/boot/bcd BCD
+initrd ${boot-url}/boot/boot.sdi boot.sdi
+initrd ${boot-url}/boot.wim boot.wim
+boot || shell

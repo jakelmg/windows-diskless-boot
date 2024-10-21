@@ -1,0 +1,18 @@
+#!ipxe
+
+# This script asks a php web server for what iSCSI target and initiator IQNs to use based on the systems MAC address
+# Make sure you define MAC address and target/initiator IQNs in boot.php otherwise this wont work! :D
+
+echo Attempting iPXE Sanboot based on mac address!
+sleep 3
+
+# The php web server hosting the boot.php script. 
+set boot-url http://1.2.3.4:8080
+set my-mac ${net0/mac}
+
+:retry
+echo ${my-mac}
+chain ${boot-url}/boot.php?mac=${my-mac} || goto retry
+
+sleep 5
+goto retry

@@ -1,0 +1,4 @@
+#!ipxe
+
+dhcp
+chain tftp://${next-server}/custom.ipxe || shell

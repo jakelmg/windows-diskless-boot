@@ -1,0 +1,14 @@
+#!ipxe
+
+# This script is for booting a bootable disk via iSCSI with iPXE. 
+# You can use this if you only have 1 system you intend to boot like this... or for testing purposes.
+
+# The IQN/name to set for this device, can be important if your iSCSI server uses this for auth
+set initiator-iqn iqn.2000-01.com.example:my-pc-name
+
+echo Running boot.ipxe
+set netX/gateway 0.0.0.0
+sleep 3
+
+# Boot the specified iSCSI target/disk. "
+sanboot -d 0x80 iscsi:1.2.3.4::::iqn.2000-01.com.iscsiserver:my-target || shell
